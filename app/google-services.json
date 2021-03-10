@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "678638415504",
+    "firebase_url": "https://dpnsa-c8aaf-default-rtdb.firebaseio.com",
+    "project_id": "dpnsa-c8aaf",
+    "storage_bucket": "dpnsa-c8aaf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678638415504:android:0a5cb38f6245583d8ef215",
+        "android_client_info": {
+          "package_name": "com.example.dspnsa_v1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "678638415504-8fkq1738uto6q3k4j4iopm6ebq84p4e1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-JUjEfgvWlnKTyKPakm4LsyKgHPfFo2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "678638415504-8fkq1738uto6q3k4j4iopm6ebq84p4e1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
