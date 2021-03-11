@@ -5,13 +5,19 @@
 
     <item
         android:id="@+id/nav_account"
+        android:icon="@drawable/ic_account_circle"
         android:title="My Account"/>
-
-    <item
-        android:id="@+id/nav_settings"
-        android:title="Settings" />
-
+    <!--
     <item
         android:id="@+id/nav_logout"
+        android:title="Comfiguraciones" />
+        -->
+    <item
+        android:id="@+id/nav_help"
+        android:icon="@drawable/ic_baseline_help_24"
+        android:title="Ayuda" />
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/ic_logout"
         android:title="Logout" />
 </menu>
