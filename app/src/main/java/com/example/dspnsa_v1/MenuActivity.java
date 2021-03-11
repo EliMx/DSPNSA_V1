@@ -138,10 +138,15 @@ public class MenuActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.nav_account:
-                            // doesn't reach here ever.
+                            // openFragment(NotificationFragment.newInstance("", ""));
                             return true;
-                        case R.id.nav_settings:
-                            // do something
+                        //case R.id.nav_settings:
+                            //openFragment(NotificationFragment.newInstance("", ""));
+                        //    return true;
+                        case R.id.nav_help:
+                            Intent intent = new Intent(MenuActivity.this, HelpActivity.class);
+                            startActivity(intent);
+                            finish();
                             return true;
                         case R.id.nav_logout:
                             FirebaseAuth.getInstance().signOut();
