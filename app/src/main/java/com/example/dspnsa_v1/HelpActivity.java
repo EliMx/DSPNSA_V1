@@ -13,6 +13,7 @@ public class HelpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
+        this.setTitle("Manual de ayuda");
 
         // calling the action bar
         ActionBar actionBar = getSupportActionBar();

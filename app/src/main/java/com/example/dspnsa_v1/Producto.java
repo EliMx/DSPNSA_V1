@@ -1,9 +1,15 @@
 package com.example.dspnsa_v1;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+
 import java.util.Date;
 
 public class Producto {
-    int idProducto;
+    String idProducto;
     String nombre;
     /*int codigoBarra;
     String imagen;
@@ -20,16 +26,16 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(int idProducto, String nombre, Float precio) {
+    public Producto(String idProducto, String nombre, Float precio) {
         this.idProducto = idProducto;
         this.nombre = nombre;
         this.precio = precio;
     }
 
-    public int getIdProducto() {
+    public String getIdProducto() {
         return idProducto;
     }
-    public void setIdProducto(int idProducto) {
+    public void setIdProducto(String idProducto) {
         this.idProducto = idProducto;
     }
 
@@ -46,4 +52,5 @@ public class Producto {
     public void setPrecio(Float precio) {
         this.precio = precio;
     }
+
 }

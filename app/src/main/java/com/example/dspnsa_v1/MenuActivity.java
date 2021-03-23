@@ -2,26 +2,51 @@ package com.example.dspnsa_v1;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MenuActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigation;
@@ -29,44 +54,67 @@ public class MenuActivity extends AppCompatActivity {
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
 
-    FloatingActionButton mAddFab, mAddAlarmFab, mAddPersonFab;
+    FloatingActionButton mAddFab, mAddProductoFab, mAddListaFab;
     TextView addAlarmActionText, addPersonActionText;
     Boolean isAllFabsVisible;
+
+    private FirebaseAuth mAuth;
+    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference listasRef = rootRef.child("Listas");
+
+    private RecyclerView recyclerView;
+    private TextView emptyView;
+    listaAdapter adapter; // Create Object of the Adapter class
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        //cargar ID del usuario;
+        mAuth = FirebaseAuth.getInstance();
+        String userKey  = mAuth.getCurrentUser().getUid();
+
+        //Cargar elementos para mostrar listas guardadas por el usuario
+        recyclerView = findViewById(R.id.recycler1);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        emptyView = (TextView) findViewById(R.id.empty_view);
+
+        //Cargar listas guardadas por usuario
+        Query query = listasRef.child(userKey);
+        FirebaseRecyclerOptions<Lista> options = new FirebaseRecyclerOptions.Builder<Lista>().setQuery(query, Lista.class).build();
+        adapter = new listaAdapter(options);
+        recyclerView.setAdapter(adapter);
+
+        //Barra lateral
         bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
-        //openFragment(HomeFragment.newInstance("", ""));
 
-        //Floating button menu
+        //Botones que flotan en menu
         bottomNavigation.setBackground(null);
         bottomNavigation.getMenu().getItem(2).setEnabled(false);
 
-        // drawer layout instance to toggle the menu icon to open
-        // drawer and back button to close drawer
+        //Barra lateral
         drawerLayout = findViewById(R.id.my_drawer_layout);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
 
+        //Menu inferior de navegacion
         navigationView = findViewById(R.id.drawer_menu_items);
         navigationView.setNavigationItemSelectedListener(navigationItemSelectedListener1);
 
-        // pass the Open and Close toggle for the drawer layout listener
-        // to toggle the button
+        //Boton para abrir y cerrar barra lateral
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Register all the FABs with their IDs
-        // This FAB button is the Parent
+        //Registro  de los elementos de botones que flotan
         mAddFab = (FloatingActionButton) findViewById(R.id.fab1);
-        mAddAlarmFab = (FloatingActionButton) findViewById(R.id.fab2);
-        mAddPersonFab = (FloatingActionButton) findViewById(R.id.fab3);
+        mAddProductoFab = (FloatingActionButton) findViewById(R.id.fab2);
+        mAddListaFab = (FloatingActionButton) findViewById(R.id.fab3);
 
-        mAddAlarmFab.setVisibility(View.GONE);
-        mAddPersonFab.setVisibility(View.GONE);
+        //Visibilidad de botones que flotan
+        mAddProductoFab.setVisibility(View.GONE);
+        mAddListaFab.setVisibility(View.GONE);
 
         isAllFabsVisible = false;
 
@@ -74,33 +122,52 @@ public class MenuActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         if (!isAllFabsVisible) {
-                            mAddAlarmFab.show();
-                            mAddPersonFab.show();
+                            mAddProductoFab.show();
+                            mAddListaFab.show();
                             isAllFabsVisible = true;
                         } else {
-                            mAddAlarmFab.hide();
-                            mAddPersonFab.hide();
+                            mAddProductoFab.hide();
+                            mAddListaFab.hide();
                             isAllFabsVisible = false;
                         }
                     }
                 });
-        mAddPersonFab.setOnClickListener(
+        //Floating button "Agregar Lista"
+        mAddListaFab.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Toast.makeText(MenuActivity.this, "Agregar Lista", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MenuActivity.this, GestorLista.class);
+                        startActivity(intent);
+                        finish();
                     }
                 });
 
-        mAddAlarmFab.setOnClickListener(
+        mAddProductoFab.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Toast.makeText(MenuActivity.this, "Agregar Producto", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MenuActivity.this, GestorProducto.class);
+                        startActivity(intent);
+                        finish();
                     }
                 });
     }
-    
+
+    @Override protected void onStart()
+    {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override protected void onStop()
+    {
+        super.onStop();
+        adapter.stopListening();
+    }
+
     public void openFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, fragment);
@@ -116,7 +183,9 @@ public class MenuActivity extends AppCompatActivity {
                             //openFragment(HomeFragment.newInstance("", ""));
                             return true;
                         case R.id.navigation_search:
-                            //openFragment(SmsFragment.newInstance("", ""));
+                            Intent intent = new Intent(MenuActivity.this, BuscadorActivity.class);
+                            startActivity(intent);
+                            finish();
                             return true;
                         //case R.id.navigation_add:
                             //openFragment(NotificationFragment.newInstance("", ""));
@@ -163,5 +232,5 @@ public class MenuActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-}
 
+}
