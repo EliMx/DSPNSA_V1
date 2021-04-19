@@ -2,7 +2,9 @@ package com.example.dspnsa_v1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,11 +37,12 @@ import java.util.Map;
 
 public class GestorProducto extends AppCompatActivity {
     //Componentes del registro
-    private EditText EditTextNombre;
+    private TextInputEditText EditTextNombre, EditTextPrecio;
     private Button buttonRegistrar, buttonEliminar;
 
     //variables del registro
     private String nombre = "";
+    private float precio = 0;
     private String listaId;
     private String productoId;
 
@@ -47,6 +51,7 @@ public class GestorProducto extends AppCompatActivity {
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     String userKey  = mAuth.getCurrentUser().getUid();
     private DatabaseReference mDatabaseReference = mDatabase.getReference("Listas").child(userKey);
+    DatabaseReference mDatabaseReferenceProductos = mDatabase.getReference("Productos").child(userKey);
     private List<String> nomeConsulta = new ArrayList<String>();
     private ArrayAdapter<String> dataAdapter;
 
@@ -64,12 +69,11 @@ public class GestorProducto extends AppCompatActivity {
         //Find the TextViews by ID
         mScoreText1 = (TextView)findViewById(R.id.score_1);
 
-        EditTextNombre = (EditText) findViewById(R.id.inputNombre);
+        EditTextNombre = (TextInputEditText) findViewById(R.id.inputNombre);
+        EditTextPrecio = (TextInputEditText) findViewById(R.id.inputPrecio);
         buttonRegistrar = (Button) findViewById(R.id.registroButton);
         buttonEliminar = (Button) findViewById(R.id.eliminarButton);
         buttonEliminar.setVisibility(View.INVISIBLE);
-
-        nombre = EditTextNombre.getText().toString();
 
         dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, nomeConsulta);
         // Drop down layout style - list view with radio button
@@ -106,6 +110,7 @@ public class GestorProducto extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 nombre = EditTextNombre.getText().toString();
+                precio = Float.parseFloat(EditTextPrecio.getText().toString());
                 if (!nombre.isEmpty()){
                     registrarProducto();
                 }else{
@@ -116,17 +121,28 @@ public class GestorProducto extends AppCompatActivity {
     }
 
     private void registrarProducto() {
-        DatabaseReference mDatabaseReferenceProductos = mDatabase.getReference("Productos").child(userKey);
-        mDatabaseReferenceProductos.addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabaseReferenceProductos.orderByChild("nombre").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String productoKey = mDatabaseReferenceProductos.push().getKey();
-                Producto producto = new Producto();
-                producto.setIdProducto(productoKey);
-                producto.setNombre(nombre);
-                if (snapshot.hasChild(nombre)) {
+                boolean exists = false;
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    //Verificar si producto ya existe
+                    if ((ds.getValue(Producto.class).getNombre()).equals(nombre)) {
+                        exists = true;
+                        break;
+                    } else {
+                        exists = false;
+                    }
+                }
+                if (exists) {
                     Toast.makeText(GestorProducto.this, "Producto ya existe", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
+                    //Crear producto
+                    String productoKey = mDatabaseReferenceProductos.push().getKey();
+                    Producto producto = new Producto();
+                    producto.setIdProducto(productoKey);
+                    producto.setNombre(nombre);
+                    producto.setPrecio(precio);
                     mDatabaseReferenceProductos.child(productoKey).setValue(producto);
                     Toast.makeText(GestorProducto.this, "Informacion guardada", Toast.LENGTH_SHORT).show();
                     agregarProductoLista(producto);
@@ -155,9 +171,13 @@ public class GestorProducto extends AppCompatActivity {
                     for(DataSnapshot itemSnapshot : snapshot.getChildren()){
                         String key = itemSnapshot.getKey();
                         String inventarioKey = mDatabaseReference.child(key).push().getKey();
-                        // .child("Productos").setValue(productosInventario).
+                        //Actualizar informacion de producto con id de lista seleccionada en dropdown en base de datos
+                        Map<String, Object> productoUpdates = new HashMap<>();
+                        productoUpdates.put("idLista", key);
+                        mDatabaseReferenceProductos.child(producto.idProducto).updateChildren(productoUpdates);
+                        //Guardar referencia de producto en el objeto lista en base de datos
                         snapshot.getRef().child(key).child("Productos").child(producto.idProducto).setValue(cantidad).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
+                        @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful())
                                 {

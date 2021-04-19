@@ -7,10 +7,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -26,7 +29,6 @@ import java.util.List;
 // database contents in a Recycler View
 public class listaAdapter extends FirebaseRecyclerAdapter<Lista, listaAdapter.listaViewholder> {
 
-
     public listaAdapter(
             @NonNull FirebaseRecyclerOptions<Lista> options)
     {
@@ -41,6 +43,7 @@ public class listaAdapter extends FirebaseRecyclerAdapter<Lista, listaAdapter.li
     onBindViewHolder(@NonNull listaViewholder holder, int position, @NonNull Lista model)
     {
         holder.firstname.setText(model.getNombre());
+
         holder.itemView.setOnClickListener(v ->{
             Intent intent = new Intent(v.getContext(), GestorLista.class);
             intent.putExtra("Lista", model);

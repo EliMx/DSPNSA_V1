@@ -10,27 +10,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     tools:ignore="HardcodedText">
-
-    <FrameLayout
-        android:id="@+id/container"
+   <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        <!--
-        <ListView
-            android:id="@+id/list1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"/>
-        -->
+        android:orientation="vertical"
+        android:layout_height="match_parent">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
+            android:layout_height="match_parent" />
         <TextView
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
@@ -42,7 +29,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
+            android:layout_gravity="bottom"
+            android:orientation="horizontal">
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottom_navigation"
                 android:layout_width="match_parent"
@@ -92,7 +80,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/fab2"
             app:layout_constraintEnd_toStartOf="@+id/fab2"
             app:layout_constraintTop_toTopOf="@+id/fab2"/>
-    </FrameLayout>
+   </FrameLayout>
 
     <!--this the navigation view which draws
         and shows the navigation drawer-->

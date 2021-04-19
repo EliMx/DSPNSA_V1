@@ -10,6 +10,7 @@ import java.util.Date;
 
 public class Producto {
     String idProducto;
+    String idLista;
     String nombre;
     /*int codigoBarra;
     String imagen;
@@ -26,8 +27,9 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(String idProducto, String nombre, Float precio) {
+    public Producto(String idProducto, String nombre, Float precio, String idLista) {
         this.idProducto = idProducto;
+        this.idLista = idLista;
         this.nombre = nombre;
         this.precio = precio;
     }
@@ -37,6 +39,13 @@ public class Producto {
     }
     public void setIdProducto(String idProducto) {
         this.idProducto = idProducto;
+    }
+
+    public String getIdLista() {
+        return idLista;
+    }
+    public void setIdLista(String idLista) {
+        this.idLista = idLista;
     }
 
     public String getNombre() {
