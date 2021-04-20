@@ -6,9 +6,10 @@ import androidx.annotation.Nullable;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Producto {
+public class Producto implements Serializable {
     String idProducto;
     String idLista;
     String nombre;

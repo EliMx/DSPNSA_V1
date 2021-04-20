@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -60,6 +61,8 @@ public class GestorProducto extends AppCompatActivity {
     // Member variables for holding the score
     private TextView mScoreText1;
 
+    private Producto productoDetalles;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +84,15 @@ public class GestorProducto extends AppCompatActivity {
 
         dropdow = findViewById(R.id.spinner1);
         dropdow.setAdapter(dataAdapter);
+
+        //Cargar detalles de lista seleccionada en menu inicial
+        Intent intent1 = getIntent();
+        productoDetalles = (Producto) intent1.getSerializableExtra("Producto");
+        if (productoDetalles != null) {
+            buttonRegistrar.setText("Actualizar");
+            updateVista(productoDetalles);
+        }else{
+        }
 
         mDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -120,39 +132,53 @@ public class GestorProducto extends AppCompatActivity {
         });
     }
 
+    private void updateVista(Producto productoDetalles) {
+        EditTextNombre.setText(productoDetalles.getNombre());
+        EditTextPrecio.setText(productoDetalles.getPrecio().toString());
+
+    }
+
     private void registrarProducto() {
-        mDatabaseReferenceProductos.orderByChild("nombre").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean exists = false;
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    //Verificar si producto ya existe
-                    if ((ds.getValue(Producto.class).getNombre()).equals(nombre)) {
-                        exists = true;
-                        break;
+        if (productoDetalles != null){
+            listaId = productoDetalles.idLista;
+            mDatabaseReference.child(listaId).child("nombre").setValue(nombre);
+            Toast.makeText(GestorProducto.this, "Información actualizada", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(GestorProducto.this, MenuActivity.class));
+            finish();
+        }else{
+            mDatabaseReferenceProductos.orderByChild("nombre").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    boolean exists = false;
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        //Verificar si producto ya existe
+                        if ((ds.getValue(Producto.class).getNombre()).equals(nombre)) {
+                            exists = true;
+                            break;
+                        } else {
+                            exists = false;
+                        }
+                    }
+                    if (exists) {
+                        Toast.makeText(GestorProducto.this, "Producto ya existe", Toast.LENGTH_SHORT).show();
                     } else {
-                        exists = false;
+                        //Crear producto
+                        String productoKey = mDatabaseReferenceProductos.push().getKey();
+                        Producto producto = new Producto();
+                        producto.setIdProducto(productoKey);
+                        producto.setNombre(nombre);
+                        producto.setPrecio(precio);
+                        mDatabaseReferenceProductos.child(productoKey).setValue(producto);
+                        Toast.makeText(GestorProducto.this, "Informacion guardada", Toast.LENGTH_SHORT).show();
+                        agregarProductoLista(producto);
                     }
                 }
-                if (exists) {
-                    Toast.makeText(GestorProducto.this, "Producto ya existe", Toast.LENGTH_SHORT).show();
-                } else {
-                    //Crear producto
-                    String productoKey = mDatabaseReferenceProductos.push().getKey();
-                    Producto producto = new Producto();
-                    producto.setIdProducto(productoKey);
-                    producto.setNombre(nombre);
-                    producto.setPrecio(precio);
-                    mDatabaseReferenceProductos.child(productoKey).setValue(producto);
-                    Toast.makeText(GestorProducto.this, "Informacion guardada", Toast.LENGTH_SHORT).show();
-                    agregarProductoLista(producto);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(GestorProducto.this, "Lo sentimos, su informacion no pudo ser almacenada. Error: " + error, Toast.LENGTH_SHORT).show();
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(GestorProducto.this, "Lo sentimos, su informacion no pudo ser almacenada. Error: " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
     }
 
     private void agregarProductoLista(Producto producto) {

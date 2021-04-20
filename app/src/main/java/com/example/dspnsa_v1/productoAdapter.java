@@ -1,9 +1,12 @@
 package com.example.dspnsa_v1;
 
+import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +48,11 @@ public class productoAdapter extends FirebaseRecyclerAdapter<Producto, productoA
         });
         //holder.nombreProducto.setText(cantidad+" "+model.getNombre());
         holder.cantidadProducto.setText("Precio: $"+model.getPrecio());
+        holder.itemView.setOnClickListener(v ->{
+            Intent intent = new Intent(v.getContext(), GestorProducto.class);
+            intent.putExtra("Producto", model);
+            v.getContext().startActivity(intent);
+        });
     }
 
     @NonNull
