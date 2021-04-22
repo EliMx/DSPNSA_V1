@@ -13,17 +13,17 @@ public class Producto implements Serializable {
     String idProducto;
     String idLista;
     String nombre;
-    /*int codigoBarra;
+    int codigoBarra;
     String imagen;
     int categoria;
     Date fechaAdquirido;
     Date fechaCaducidad;
-    int tipo;*/
+    int tipo;
     Float precio;
-    /*String comentario;
+    String comentario;
     String lugarcompra;
     String Pasillo;
-    string almacenaje;*/
+    String almacenaje;
 
     public Producto() {
     }
@@ -33,6 +33,24 @@ public class Producto implements Serializable {
         this.idLista = idLista;
         this.nombre = nombre;
         this.precio = precio;
+    }
+
+    public Producto(String idProducto, String idLista, String nombre, int codigoBarra, String imagen, int categoria, Date fechaAdquirido,
+                    Date fechaCaducidad, int tipo, Float precio, String comentario, String lugarcompra, String pasillo, String almacenaje) {
+        this.idProducto = idProducto;
+        this.idLista = idLista;
+        this.nombre = nombre;
+        this.codigoBarra = codigoBarra;
+        this.imagen = imagen;
+        this.categoria = categoria;
+        this.fechaAdquirido = fechaAdquirido;
+        this.fechaCaducidad = fechaCaducidad;
+        this.tipo = tipo;
+        this.precio = precio;
+        this.comentario = comentario;
+        this.lugarcompra = lugarcompra;
+        Pasillo = pasillo;
+        this.almacenaje = almacenaje;
     }
 
     public String getIdProducto() {
@@ -63,4 +81,83 @@ public class Producto implements Serializable {
         this.precio = precio;
     }
 
+    public int getCodigoBarra() {
+        return codigoBarra;
+    }
+
+    public void setCodigoBarra(int codigoBarra) {
+        this.codigoBarra = codigoBarra;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
+
+    public int getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(int categoria) {
+        this.categoria = categoria;
+    }
+
+    public Date getFechaAdquirido() {
+        return fechaAdquirido;
+    }
+
+    public void setFechaAdquirido(Date fechaAdquirido) {
+        this.fechaAdquirido = fechaAdquirido;
+    }
+
+    public Date getFechaCaducidad() {
+        return fechaCaducidad;
+    }
+
+    public void setFechaCaducidad(Date fechaCaducidad) {
+        this.fechaCaducidad = fechaCaducidad;
+    }
+
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getComentario() {
+        return comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
+    public String getLugarcompra() {
+        return lugarcompra;
+    }
+
+    public void setLugarcompra(String lugarcompra) {
+        this.lugarcompra = lugarcompra;
+    }
+
+    public String getPasillo() {
+        return Pasillo;
+    }
+
+    public void setPasillo(String pasillo) {
+        Pasillo = pasillo;
+    }
+
+    public String getAlmacenaje() {
+        return almacenaje;
+    }
+
+    public void setAlmacenaje(String almacenaje) {
+        this.almacenaje = almacenaje;
+    }
 }
