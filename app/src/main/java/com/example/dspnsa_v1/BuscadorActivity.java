@@ -72,8 +72,7 @@ public class BuscadorActivity extends AppCompatActivity{
         buscador.setQueryHint("Search Here");
     }
 
-    // this event will enable the back
-    // function to the button on press
+    // habilidar boton para volver atras
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {

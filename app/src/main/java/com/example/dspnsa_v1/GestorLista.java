@@ -105,13 +105,15 @@ public class GestorLista extends AppCompatActivity {
         if (listaDetalles != null) {
             update(listaDetalles);
             buttonEliminar.setVisibility(View.VISIBLE);
-            Query query = productosRef.orderByChild("idLista").equalTo(listaDetalles.idLista);
+            String idLista_adquirido = listaDetalles.idLista+"_false";
+            Query queryRefProductos = productosRef.orderByChild("idLista_adquirido").equalTo(idLista_adquirido);
+            //Query queryRefProductos2 = queryRefProductos.orderByChild("adquirico").equalTo(false);
             Query queryRefLista = mDatabaseReference.child(listaDetalles.idLista).child("Productos");
-            FirebaseRecyclerOptions<Producto> options = new FirebaseRecyclerOptions.Builder<Producto>().setQuery(query, Producto.class).build();
+            FirebaseRecyclerOptions<Producto> options = new FirebaseRecyclerOptions.Builder<Producto>().setQuery(queryRefProductos, Producto.class).build();
             adapProd = new productoAdapter(options, queryRefLista);
             recyclerView.setAdapter(adapProd);
             //Activar accion para deslizar lista a la izq para eliminar
-            enableSwipe(query, queryRefLista);
+            enableSwipe(queryRefProductos, queryRefLista);
         }else{
             //registrarLista();
         }

@@ -18,12 +18,14 @@ public class Producto implements Serializable {
     int categoria;
     Date fechaAdquirido;
     Date fechaCaducidad;
+    Boolean adquirido;
     int tipo;
     Float precio;
     String comentario;
     String lugarcompra;
     String Pasillo;
     String almacenaje;
+    String idLista_adquirido;
 
     public Producto() {
     }
@@ -36,7 +38,7 @@ public class Producto implements Serializable {
     }
 
     public Producto(String idProducto, String idLista, String nombre, int codigoBarra, String imagen, int categoria, Date fechaAdquirido,
-                    Date fechaCaducidad, int tipo, Float precio, String comentario, String lugarcompra, String pasillo, String almacenaje) {
+                    Date fechaCaducidad, int tipo, Float precio, String comentario, String lugarcompra, String pasillo, String almacenaje, Boolean adquirido, String idLista_adquirido) {
         this.idProducto = idProducto;
         this.idLista = idLista;
         this.nombre = nombre;
@@ -51,6 +53,8 @@ public class Producto implements Serializable {
         this.lugarcompra = lugarcompra;
         Pasillo = pasillo;
         this.almacenaje = almacenaje;
+        this.adquirido = adquirido;
+        this.idLista_adquirido = idLista_adquirido;
     }
 
     public String getIdProducto() {
@@ -159,5 +163,21 @@ public class Producto implements Serializable {
 
     public void setAlmacenaje(String almacenaje) {
         this.almacenaje = almacenaje;
+    }
+
+    public Boolean getAdquirido() {
+        return adquirido;
+    }
+
+    public void setAdquirido(Boolean adquirido) {
+        this.adquirido = adquirido;
+    }
+
+    public String getIdLista_adquirido() {
+       return idLista_adquirido;
+    }
+
+    public void setIdLista_adquirido(String idLista_adquirido) {
+        this.idLista_adquirido = idLista_adquirido;
     }
 }

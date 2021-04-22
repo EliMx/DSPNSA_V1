@@ -168,6 +168,7 @@ public class GestorProducto extends AppCompatActivity {
                         producto.setIdProducto(productoKey);
                         producto.setNombre(nombre);
                         producto.setPrecio(precio);
+                        producto.setAdquirido(false);
                         mDatabaseReferenceProductos.child(productoKey).setValue(producto);
                         Toast.makeText(GestorProducto.this, "Informacion guardada", Toast.LENGTH_SHORT).show();
                         agregarProductoLista(producto);
@@ -200,6 +201,7 @@ public class GestorProducto extends AppCompatActivity {
                         //Actualizar informacion de producto con id de lista seleccionada en dropdown en base de datos
                         Map<String, Object> productoUpdates = new HashMap<>();
                         productoUpdates.put("idLista", key);
+                        productoUpdates.put("idLista_adquirido", key+"_"+producto.getAdquirido());
                         mDatabaseReferenceProductos.child(producto.idProducto).updateChildren(productoUpdates);
                         //Guardar referencia de producto en el objeto lista en base de datos
                         snapshot.getRef().child(key).child("Productos").child(producto.idProducto).setValue(cantidad).addOnCompleteListener(new OnCompleteListener<Void>() {
