@@ -1,12 +1,17 @@
 package com.example.dspnsa_v1;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaDrm;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -17,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -37,13 +43,18 @@ public class BuscadorActivity extends AppCompatActivity{
 
     private ArrayList<Lista> listas;
     SearchView buscador;
-    private ListView listaView;
-    String searchString = "";
+    CharSequence queryBusqueda;
 
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();;
-    private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-    String userKey  = mAuth.getCurrentUser().getUid();
-    private DatabaseReference mDatabaseReference = mDatabase.getReference("Listas").child(userKey);
+    private FirebaseAuth mAuth;
+    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference listasRef = rootRef.child("Listas");
+
+    private RecyclerView recyclerView;
+    private TextView emptyView;
+    listaAdapter adapter;
+    FirebaseRecyclerOptions<Lista> options;
+    Query query1;
+    String userKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,19 +68,75 @@ public class BuscadorActivity extends AppCompatActivity{
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        buscador = (SearchView) findViewById(R.id.searchView1);
-        listaView = findViewById(R.id.listView1);
+        //cargar ID del usuario;
+        mAuth = FirebaseAuth.getInstance();
+        userKey  = mAuth.getCurrentUser().getUid();
 
+        buscador = (SearchView) findViewById(R.id.searchView1);
+
+        queryBusqueda = buscador.getQuery(); // get the query string currently in the text field
+        System.out.println("x ---------------------------> "+queryBusqueda);
         setupSearchView();
 
-        buscador.getContext().getResources().getIdentifier("android:id/submit_area", null, null);
+        //Registro  de los elementos de view para mostrar listas guardadas por el usuario
+        recyclerView = findViewById(R.id.recycler1);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        //Cargar listas guardadas por usuario
+        query1 = listasRef.child(userKey);
+        options = new FirebaseRecyclerOptions.Builder<Lista>().setQuery(query1, Lista.class).build();
+        adapter = new listaAdapter(options);
+        recyclerView.setAdapter(adapter);
+
+        buscador.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //setUpRecyclerView();
+                firebaseBusquedaPalabra(query);
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //adapter.filter(newText);
+                firebaseBusquedaLetra(newText);
+                return false;
+            }
+        });
+
+    }
+
+    private void firebaseBusquedaLetra(String query) {
+        Query firebaseSearchQuery = listasRef.child(userKey).orderByChild("nombre").startAt(query);
+        FirebaseRecyclerOptions<Lista> options1 = new FirebaseRecyclerOptions.Builder<Lista>().setQuery(firebaseSearchQuery, Lista.class).build();
+        listaAdapter adapter1 = new listaAdapter(options1);
+        adapter1.startListening();
+        recyclerView.setAdapter(adapter1);
+    }
+
+    private void firebaseBusquedaPalabra(String query) {
+        Query firebaseSearchQuery = listasRef.child(userKey).orderByChild("nombre").equalTo(query);
+        FirebaseRecyclerOptions<Lista> options1 = new FirebaseRecyclerOptions.Builder<Lista>().setQuery(firebaseSearchQuery, Lista.class).build();
+        listaAdapter adapter1 = new listaAdapter(options1);
+        adapter1.startListening();
+        recyclerView.setAdapter(adapter1);
+    }
+
+    @Override protected void onStart()
+    {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override protected void onStop()
+    {
+        super.onStop();
+        adapter.stopListening();
     }
 
     private void setupSearchView() {
         buscador.setIconifiedByDefault(false);
         buscador.setSubmitButtonEnabled(true);
-        buscador.setQueryHint("Search Here");
+        buscador.setQueryHint("Buscar aqui");
     }
 
     // habilidar boton para volver atras
