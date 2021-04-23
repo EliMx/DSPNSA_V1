@@ -49,6 +49,7 @@ public class listaAdapter extends FirebaseRecyclerAdapter<Lista, listaAdapter.li
             intent.putExtra("Lista", model);
             v.getContext().startActivity(intent);
         });
+
     }
 
     // Function to tell the class about the Card view (here
@@ -72,4 +73,5 @@ public class listaAdapter extends FirebaseRecyclerAdapter<Lista, listaAdapter.li
             firstname = itemView.findViewById(R.id.textview);
         }
     }
+
 }

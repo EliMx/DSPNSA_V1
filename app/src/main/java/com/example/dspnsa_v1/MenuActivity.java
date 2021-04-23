@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -64,6 +65,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,7 +97,7 @@ public class MenuActivity extends AppCompatActivity {
         String userKey  = mAuth.getCurrentUser().getUid();
 
         //Registro  de los elementos de view para mostrar listas guardadas por el usuario
-                recyclerView = findViewById(R.id.recycler1);
+        recyclerView = findViewById(R.id.recycler1);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         emptyView = (TextView) findViewById(R.id.empty_view);
 
